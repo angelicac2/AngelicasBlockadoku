@@ -19,6 +19,15 @@ public class GameView extends JFrame {
         this.setTitle("Angelica's Blockadoku");
         this.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
         this.setVisible(true);
+    }
+
+    public void paint(Graphics g) {
+
+    }
+    public void drawScore(Graphics g) {
+
+    }
+    public void gameOVer(Graphics g) {
 
     }
 }

@@ -12,4 +12,9 @@ public class Game {
     public Game() {
         frontend = new GameView(this);
     }
+
+    // main function for playing the game; true if user wins, false if user loses
+    public boolean playGame() {
+        return true;
+    }
 }
