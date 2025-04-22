@@ -1,6 +1,6 @@
 public class Board {
     private boolean filledStatus;
-    Block [][] board;
+    boolean[][] board;
     private final int height = 27;
     private final int width = 27;
     private int x;
@@ -11,6 +11,15 @@ public class Board {
         this.x = x;
         this.y = y;
         filledStatus = false;
+    }
+
+    public boolean[][] fillBoard() {
+        for (int i = 0; i < 9; i++) {
+            for (int j = 0; j < 9; j++) {
+                board[i][j] = false;
+            }
+        }
+        return board;
     }
 
     public boolean isFilled() {
