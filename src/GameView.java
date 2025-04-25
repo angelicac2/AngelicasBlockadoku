@@ -22,6 +22,7 @@ public class GameView extends JFrame {
     }
 
     public void paint(Graphics g) {
+        //drawPlayButton(g);
         g.drawImage(play, 0, 0, WINDOW_WIDTH,WINDOW_HEIGHT,this);
         if (backend.getState() == 1) {
             g.drawImage(instructions, 0, 0, WINDOW_WIDTH,WINDOW_HEIGHT, this);
@@ -41,19 +42,22 @@ public class GameView extends JFrame {
         }
     }
 
-    public void drawRandomBlock(Graphics g, int interation) {
+    public void drawRandomBlock(Graphics g, int iteration) {
         for (int i = 0; i < 5; i++) {
             for (int j = 0; j < 5; j++) {
                 if (backend.getShape()[i][j] == true) {
                     g.setColor(Color.black);
-                    g.drawRect((interation * 200) + (i * 50 + 300), j * 50 + 720, 50, 50);
+                    g.drawRect((iteration * 200) + (i * 50 + 300), j * 50 + 720, 50, 50);
                     g.setColor(Color.blue);
-                    g.fillRect((interation * 200) + (i * 50 + 300), j * 50 + 720, 50, 50);
+                    g.fillRect((iteration * 200) + (i * 50 + 300), j * 50 + 720, 50, 50);
                 }
             }
         }
     }
 
+    public void drawPlayButton(Graphics g) {
+        g.drawOval(379, 807, backend.getPlayButton(), backend.getPlayButton());
+    }
     public void drawScore(Graphics g) {
 
     }
