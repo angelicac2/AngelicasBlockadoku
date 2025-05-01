@@ -7,7 +7,7 @@ public class Board {
     private int y;
 
 
-    public Board(int x, int y) {
+    public Board() {
         this.x = x;
         this.y = y;
         filledStatus = false;

@@ -81,7 +81,7 @@ public class ShapeManager {
                 {false, true, false, false, false},
                 {true, true, false, false, false},
                 {true, false, false, false, false},
-                {true, false, false, false, false},
+                {false, false, false, false, false},
                 {false, false, false, false, false}
         };
         generateShape.add(shape5);
@@ -92,16 +92,16 @@ public class ShapeManager {
                 {true, false, false, false, false},
                 {true, true, false, false, false},
                 {false, true, false, false, false},
-                {false, true, false, false, false},
+                {false, false, false, false, false},
                 {false, false, false, false, false}
         };
         generateShape.add(shape6);
         return shape6;
     }
 
-    public boolean[][] randomShape() {
+    public int randomShapeIndex() {
         int random = (int)(Math.random() * generateShape.size());
-        return generateShape.get(random);
+        return random;
     }
 
     public int numShapes() {

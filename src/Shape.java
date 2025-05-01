@@ -1,3 +1,5 @@
+import java.awt.*;
+
 public class Shape {
     private boolean[][] squares;
     int x;
@@ -5,6 +7,10 @@ public class Shape {
     private int iteration = 1;
     private int shapeLength;
     private int shapeWidth;
+    private int squareSize = 50;
+    int blockX;
+    int blockY;
+
 
 
     public Shape(int n) {
@@ -28,28 +34,48 @@ public class Shape {
         }
     }
 
-    public void setCenter(int xIn, int yIn) {
-        x = xIn;
-        y = yIn;
+    public boolean[][] getSquares() {
+        return squares;
+
     }
 
 
-    public int getShapeLength() {
-        return squares.length;
-    }
+    public boolean isClicked(int mouseX, int mouseY) {
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[0].length; j++) {
+                if (squares[i][j]) {
+                    // Calculate the top-left corner
+                    blockX = this.x + (j - shapeWidth / 2) * squareSize;
+                    blockY = this.y + (i - shapeLength / 2) * squareSize;
 
-    public int getShapeWidth() {
-        return squares[0].length;
-    }
-
-    public boolean isClicked(int x, int y) {
-        double dx = 0;
-        double dy = 0;
-        if (getShapeLength() < x && getShapeWidth() < y) {
-            dx = (this.x - x) * (this.x - x);
-            dy = (this.y - y) * (this.y - y);
+                    // Check if the mouse click is within the bounds of this block
+                    if (mouseX >= blockX && mouseX < blockX + squareSize && mouseY >= blockY && mouseY < blockY + squareSize) {
+                        return true;
+                    }
+                }
+            }
         }
-        return Math.sqrt(dx + dy) <= squares.length;
+        return false;
     }
 
+    public int getLeftX() {
+        return blockX;
+    }
+
+    public int getLeftY() {
+        return blockY;
+    }
+
+    public void reDraw(Graphics g, int increment, int iteration, Game backend) {
+        for (int i = 0; i < 5; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (squares[i][j] == true) {
+                    g.setColor(Color.black);
+                    g.drawRect((iteration * 200) + (i * 50 + 300) + (x + j * 50), j * 50 + 720 + (x + i * 50), 50, 50);
+                    g.setColor(Color.blue);
+                    g.fillRect((iteration * 200) + (i * 50 + 300) + (x + j * 50), j * 50 + 720 + (x + i * 50), 50, 50);
+                }
+            }
+        }
+    }
 }
