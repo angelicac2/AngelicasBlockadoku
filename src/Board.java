@@ -1,16 +1,16 @@
 public class Board {
     private boolean filledStatus;
     boolean[][] board;
-    private final int height = 27;
-    private final int width = 27;
+    private final int height = 9;
+    private final int width = 9;
     private int x;
     private int y;
-
+    private Game backend;
 
     public Board() {
-        this.x = x;
-        this.y = y;
+        board = new boolean[height][width];
         filledStatus = false;
+        fillBoard();
     }
 
     public boolean[][] fillBoard() {
@@ -22,8 +22,8 @@ public class Board {
         return board;
     }
 
-    public boolean isFilled() {
-        return true;
+    public boolean[][] getBoard() {
+        return board;
     }
 
     // is there space for the block to be played on the board at all?

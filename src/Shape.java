@@ -4,51 +4,98 @@ public class Shape {
     private boolean[][] squares;
     int x;
     int y;
-    private int iteration = 1;
-    private int shapeLength;
-    private int shapeWidth;
     private int squareSize = 50;
     int blockX;
     int blockY;
-
-
 
     public Shape(int n) {
         if (n == 1) {
             squares = ShapeManager.makeShape1();
         }
-        if (n == 2) {
+        else if (n == 2) {
             squares = ShapeManager.makeShape2();
         }
-        if (n == 3) {
+        else if (n == 3) {
             squares = ShapeManager.makeShape3();
         }
-        if (n == 4) {
+        else if (n == 4) {
             squares = ShapeManager.makeShape4();
         }
-        if (n == 5) {
+        else if (n == 5) {
             squares = ShapeManager.makeShape5();
         }
-        if (n == 6) {
+        else if (n == 6) {
             squares = ShapeManager.makeShape6();
+        }
+        else if (n == 7) {
+            squares = ShapeManager.makeShape7();
+        }
+        else if (n == 8) {
+            squares = ShapeManager.makeShape8();
+        }
+        else if (n == 9) {
+            squares = ShapeManager.makeShape9();
+        }
+        else if (n == 10) {
+            squares = ShapeManager.makeShape10();
+        }
+        else if (n == 11) {
+            squares = ShapeManager.makeShape11();
+        }
+        else if (n == 12) {
+            squares = ShapeManager.makeShape12();
+        }
+        else if (n == 13) {
+            squares = ShapeManager.makeShape13();
+        }
+        else if (n == 14) {
+            squares = ShapeManager.makeShape14();
+        }
+        else if (n == 15) {
+            squares = ShapeManager.makeShape15();
+        }
+        else if (n == 16) {
+            squares = ShapeManager.makeShape16();
+        }
+        else if (n == 17) {
+            squares = ShapeManager.makeShape17();
+        }
+        else if (n == 18) {
+            squares = ShapeManager.makeShape18();
+        }
+        else if (n == 19) {
+            squares = ShapeManager.makeShape19();
+        }
+        else if (n == 20) {
+            squares = ShapeManager.makeShape20();
+        }
+        else if (n == 21) {
+            squares = ShapeManager.makeShape21();
+        }
+        else if (n == 22) {
+            squares = ShapeManager.makeShape22();
+        }
+        else if (n == 23) {
+            squares = ShapeManager.makeShape23();
+        }
+        else if (n == 24) {
+            squares = ShapeManager.makeShape24();
         }
     }
 
     public boolean[][] getSquares() {
-        return squares;
-
+        return this.squares;
     }
-
 
     public boolean isClicked(int mouseX, int mouseY) {
         for (int i = 0; i < squares.length; i++) {
             for (int j = 0; j < squares[0].length; j++) {
                 if (squares[i][j]) {
                     // Calculate the top-left corner
-                    blockX = this.x + (j - shapeWidth / 2) * squareSize;
-                    blockY = this.y + (i - shapeLength / 2) * squareSize;
+                    blockX = this.x + j * squareSize;
+                    blockY = this.y + i * squareSize;
 
-                    // Check if the mouse click is within the bounds of this block
+                    // Check if the mouse click in bounds of block
                     if (mouseX >= blockX && mouseX < blockX + squareSize && mouseY >= blockY && mouseY < blockY + squareSize) {
                         return true;
                     }
@@ -58,24 +105,19 @@ public class Shape {
         return false;
     }
 
-    public int getLeftX() {
-        return blockX;
-    }
-
-    public int getLeftY() {
-        return blockY;
-    }
-
-    public void reDraw(Graphics g, int increment, int iteration, Game backend) {
-        for (int i = 0; i < 5; i++) {
-            for (int j = 0; j < 5; j++) {
+    public void reDraw(Graphics g) {
+        for (int i = 0; i < squares.length; i++) {
+            for (int j = 0; j < squares[i].length; j++) {
                 if (squares[i][j] == true) {
+                    int drawX = this.x + j * squareSize;
+                    int drawY = this.y + i * squareSize;
                     g.setColor(Color.black);
-                    g.drawRect((iteration * 200) + (i * 50 + 300) + (x + j * 50), j * 50 + 720 + (x + i * 50), 50, 50);
+                    g.drawRect(drawX, drawY, 50, 50);
                     g.setColor(Color.blue);
-                    g.fillRect((iteration * 200) + (i * 50 + 300) + (x + j * 50), j * 50 + 720 + (x + i * 50), 50, 50);
+                    g.fillRect(drawX, drawY, 50, 50);
                 }
             }
         }
     }
+
 }
