@@ -49,6 +49,8 @@ public class GameView extends JFrame {
         }
     }
 
+
+    // Draws the original 9x9 board, also fills each board when shape is dragged into it
     public void drawBoard(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
         g.setFont(new Font("Algerian", Font.BOLD, 30));
@@ -80,6 +82,7 @@ public class GameView extends JFrame {
         g2d.setStroke(new BasicStroke(1));
     }
 
+    // Generates three random blocks and puts them at the bottom of the screen for user
     public void drawRandomBlock(Graphics g, int increment) {
         Shape currentShape = backend.random().get(increment);
         for (int i = 0; i < 5; i++) {
@@ -94,27 +97,46 @@ public class GameView extends JFrame {
                 }
             }
         }
+        // Constantly changing the position of shape when it is being dragged
         if (backend.getSetDragged() == 1) {
             backend.getClickedShape().reDraw(g);
         }
     }
 
 
+    // If a row, box, or column has been cleared, set the square back to white (unfilled)
     public void drawScore(Graphics g) {
+        boolean valid = true;
         for (int i = 0; i < 9; i++) {
             for (int j = 0; j < 9; j++) {
-                if (backend.checkRowWin() || backend.checkColWin() || backend.checkBoxWin()) {
+                if (backend.checkRowWin()) {
                     if (!backend.boardState()[i][j]) {
-                        g.setColor(Color.white);
-                        g.fillRect(500 + i * 50, 200 + j * 50, 50, 50);
-                        g.setFont(new Font("Algerian", Font.BOLD, 30));
-                        g.drawString(String.valueOf(backend.getPoints()), 1220, 120);
+                        valid = false;
                     }
                 }
+                if (backend.checkColWin()) {
+                    if (!backend.boardState()[i][j]) {
+                        valid = false;
+                    }
+                }
+                if (backend.checkBoxWin()) {
+                    if (!backend.boardState()[i][j]) {
+                        valid = false;
+                    }
+                }
+                if (!valid) {
+                    g.setColor(Color.white);
+                    g.fillRect(500 + i * 50, 200 + j * 50, 50, 50);
+                }
+                // Update points for user
+                g.setColor(Color.black);
+                g.setFont(new Font("Algerian", Font.BOLD, 30));
+                g.drawString(String.valueOf(backend.getPoints()), 1220, 120);
             }
         }
     }
 
+    // When the user loses the game, immediately switch to game user screen
     public void gameOver(Graphics g) {
         if (backend.gameOver()) {
             g.setColor(Color.white);

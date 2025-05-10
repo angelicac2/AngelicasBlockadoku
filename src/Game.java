@@ -1,6 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.PreparedStatement;
 import java.sql.SQLOutput;
 import java.util.ArrayList;
 
@@ -121,6 +122,9 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
         if (state == 3) {
             if (x > 550 && x < 875 && y > 630 && y < 790) {
                 state = 0;
+                randomShapes = new ArrayList<Shape>();
+                currentShapes();
+                frontend.repaint();
             }
         }
 
@@ -297,7 +301,6 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
             }
         }
         if (colStatus) {
-            System.out.println("COL CLARED: " + colCleared);
             points += pointsIncrement;
             frontend.repaint();
             for (int i = 0; i < 9; i++) {
@@ -374,7 +377,7 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
                 if (shapeSquares[i][j]) {
                     int newRow = boardRow + i;
                     int newCol = boardCol + j;
-                    if (newRow < 0 || newCol >= 9 || newRow < 0 || newCol >= 9) {
+                    if (newRow < 0 || newRow >= 9 || newRow < 0 || newCol >= 9) {
                         return false;
                     }
                     if (board.getBoard()[newRow][newCol]) {
