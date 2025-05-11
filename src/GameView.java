@@ -1,5 +1,6 @@
 import javax.swing.*;
 import java.awt.*;
+import java.sql.SQLOutput;
 
 public class GameView extends JFrame {
     private final int WINDOW_HEIGHT = 953;
@@ -37,11 +38,11 @@ public class GameView extends JFrame {
         }
         if (backend.getState() == 2) {
             g.drawImage(play, 0, 0, WINDOW_WIDTH,WINDOW_HEIGHT,this);
+            drawScore(g);
             drawBoard(g);
             for (int i = 0; i < backend.random().size(); i++) {
                 drawRandomBlock(g, i);
             }
-            drawScore(g);
             gameOver(g);
         }
         if (backend.getState() == 3) {
@@ -70,8 +71,8 @@ public class GameView extends JFrame {
                 }
             }
         }
-        // Looked online to learn how to use g2d, set stroke, and basic stroke;
-        // to make lines different boldness
+        // Looked online to learn how to use g2d, set stroke, and basic stroke
+        // to make lines different a different thickness
         g2d.setStroke(new BasicStroke(3));
         for (int i = 0; i <= 9; i += 3) {
             g.drawLine(500, 200 + i * 50, 950, i * 50 + 200);
@@ -106,34 +107,20 @@ public class GameView extends JFrame {
 
     // If a row, box, or column has been cleared, set the square back to white (unfilled)
     public void drawScore(Graphics g) {
-        boolean valid = true;
-        for (int i = 0; i < 9; i++) {
-            for (int j = 0; j < 9; j++) {
-                if (backend.checkRowWin()) {
-                    if (!backend.boardState()[i][j]) {
-                        valid = false;
-                    }
-                }
-                if (backend.checkColWin()) {
-                    if (!backend.boardState()[i][j]) {
-                        valid = false;
-                    }
-                }
-                if (backend.checkBoxWin()) {
-                    if (!backend.boardState()[i][j]) {
-                        valid = false;
-                    }
-                }
-                if (!valid) {
+        boolean[][] copyBoard = backend.getCopyBoard();
+        for (int i = 0; i < copyBoard.length ; i++) {
+            for (int j = 0; j < copyBoard[0].length; j++) {
+                // When the copied board has detected a row, col, or box clearance, paint square white
+                if (copyBoard[i][j]) {
                     g.setColor(Color.white);
-                    g.fillRect(500 + i * 50, 200 + j * 50, 50, 50);
+                    g.fillRect(500 + j * 50, 200 + i * 50, 50, 50);
                 }
-                // Update points for user
-                g.setColor(Color.black);
-                g.setFont(new Font("Algerian", Font.BOLD, 30));
-                g.drawString(String.valueOf(backend.getPoints()), 1220, 120);
             }
         }
+        // Update points displayed for user
+        g.setColor(Color.black);
+        g.setFont(new Font("Algerian", Font.BOLD, 30));
+        g.drawString(String.valueOf(backend.getPoints()), 1220, 120);
     }
 
     // When the user loses the game, immediately switch to game user screen

@@ -27,12 +27,14 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
     private boolean shapeThere = false;
     private int pressedX = 0;
     private int pressedY = 0;
-    private int rowCleared = 0;
-    private int colCleared = 0;
-    private int boxClearedX = 0;
-    private int boxClearedY = 0;
     private boolean rowStatus;
     private boolean colStatus;
+    private boolean[][] copy = new boolean[9][9];
+    private int numBox;
+    private int numRow;
+    private int numCol;
+    private boolean boxStatus;
+
 
 
     public Game() {
@@ -65,30 +67,6 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
         }
     }
 
-    public ArrayList<Shape> random() {
-        return randomShapes;
-    }
-
-    // Getting a shape from arrayList to draw on board
-    public boolean[][] getCurrentShape(int i) {
-        if (randomShapes != null && i >= 0 && i < randomShapes.size()) {
-            oneShape = randomShapes.get(i).getSquares();
-            return oneShape;
-        }
-        else {
-            return null;
-        }
-    }
-
-    public Shape getClickedShape() {
-        return clickedShape;
-    }
-
-    public int getState() {
-        return state;
-    }
-
-
     public void mousePressed(MouseEvent e) {
         clickedShape = null;
         int x = e.getX();
@@ -102,6 +80,7 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
                 for (int i = 0; i < 9; i++) {
                     for (int j = 0; j < 9; j++) {
                         board.getBoard()[i][j] = false;
+                        copy[i][j] = false;
                     }
                 }
                 state = 2;
@@ -179,6 +158,42 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
         }
     }
 
+    @Override
+    public void mouseDragged(MouseEvent e) {
+        // Ask the input event the current location (x and y position on the Frame) of the mouse
+        int x = e.getX();
+        int y = e.getY();
+
+        if (clickedShape != null) {
+            setDragged = 1;
+            clickedShape.x = x;
+            clickedShape.y = y;
+        }
+    }
+
+    // Getting a shape from arrayList to draw on board
+    public boolean[][] getCurrentShape(int i) {
+        if (randomShapes != null && i >= 0 && i < randomShapes.size()) {
+            oneShape = randomShapes.get(i).getSquares();
+            return oneShape;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public ArrayList<Shape> random() {
+        return randomShapes;
+    }
+
+    public Shape getClickedShape() {
+        return clickedShape;
+    }
+
+    public int getState() {
+        return state;
+    }
+
     // In order for the shape to fill the board, the board's square needs to be true
     public void fillWithShape() {
         shapeSquares = clickedShape.getSquares();
@@ -196,6 +211,7 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
                 }
             }
         }
+        checkAllWins();
     }
 
     // The two checking conditions that make the shape valid, checking is using the same board indexes in fillShape()
@@ -229,137 +245,131 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
         return true;
     }
 
-
-    @Override
-    public void mouseDragged(MouseEvent e) {
-        // Ask the input event the current location (x and y position on the Frame) of the mouse
-        int x = e.getX();
-        int y = e.getY();
-
-        if (clickedShape != null) {
-            setDragged = 1;
-            clickedShape.x = x;
-            clickedShape.y = y;
-        }
-    }
-
     public int getSetDragged() {
         return setDragged;
-    }
-
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        int x = e.getX();
-        int y = e.getY();
     }
 
     public boolean[][] boardState() {
         return board.getBoard();
     }
 
-    public boolean checkRowWin() {
+    public void checkRowWin() {
         for (int i = 0; i < board.getBoard().length; i++) {
-            rowStatus = true;
+            boolean rowFull = true;
             for (int j = 0; j < board.getBoard()[0].length; j++) {
                 // If board cell has not been occupied, no clear
                 if (!board.getBoard()[i][j]) {
-                    rowStatus = false;
+                    rowFull = false;
                     break;
                 }
             }
             // Passing the inner for-loop means looking through a whole row, it has cleared!
-            if (rowStatus) {
-                // Get row index at which its cleared
-                rowCleared = i;
-                break;
+            if (rowFull) {
+                // Increment the number of rows being cleared to update points
+                numRow++;
+                // Don't set block to false yet, wait for other checks to complete to clear
+                for (int k = 0; k < board.getBoard()[0].length; k++) {
+                    copy[i][k] = true;
+                }
+                this.rowStatus = true;
             }
         }
-        if (rowStatus) {
-            points += pointsIncrement;
-            frontend.repaint();
-            for (int j = 0; j < 9; j++) {
-                board.getBoard()[rowCleared][j] = false;
-            }
-        }
-        return rowStatus;
     }
 
     // Same code as the rowWin, except checking cell in a column
-    public boolean checkColWin() {
+    public void checkColWin() {
         for (int j = 0; j < board.getBoard()[0].length; j++) {
-            colStatus = true;
+            boolean colFull = true;
             for (int i = 0; i < board.getBoard().length; i++) {
                 if (!board.getBoard()[i][j]) {
-                    colStatus = false;
+                    colFull = false;
                     break;
                 }
-
             }
-            if (colStatus) {
-                colCleared = j;
-                break;
-            }
-        }
-        if (colStatus) {
-            points += pointsIncrement;
-            frontend.repaint();
-            for (int i = 0; i < 9; i++) {
-                board.getBoard()[i][colCleared] = false;
+            if (colFull) {
+                numCol++;
+                for (int k = 0; k < board.getBoard().length; k++) {
+                    copy[k][j] = true;
+                }
+                this.colStatus = true;
             }
         }
-        return colStatus;
     }
 
-    public boolean checkBoxWin() {
-        boolean foundBox = false;
-        boolean boxStatus = true;
+    public void checkBoxWin() {
         // Checks for three specific 3x3 boxes in each row starting from [0][0]
         for (int a = 0; a <= board.getBoard().length - 3; a += 3) {
             for (int b = 0; b <= board.getBoard().length - 3; b += 3) {
-                boxStatus = true;
+                boolean boxFull = true;
                 // Inside the specific box, check if any of the 9 cells are empty
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
                         int boxRow = a + i;
                         int boxCol = b + j;
+                        // When box can't be cleared, stop checking for it
                         if (!board.getBoard()[boxRow][boxCol]) {
-                            boxStatus = false;
+                            boxFull = false;
                             break;
                         }
                     }
-                    // When box can't be cleared, stop checking for it
-                    if (!boxStatus) {
+                    if (!boxFull) {
                         break;
                     }
                 }
-                if (boxStatus) {
-                    boxClearedX = a;
-                    boxClearedY = b;
-                    foundBox = true;
-                    break;
+                if (boxFull) {
+                    numBox++;
+                    for (int i = 0; i < 3; i++) {
+                        for (int j = 0; j < 3; j++) {
+                            int rowClear = a + i;
+                            int colClear = b + j;
+                            copy[rowClear][colClear] = true;
+                        }
+                    }
+                    this.boxStatus = true;
                 }
             }
-            // When box is cleared, also stop checking
-            if (foundBox) {
-                break;
+        }
+    }
+
+    // Set original board blocks to false on the ones can be cleared at the same time
+    public void clearAll() {
+        for (int i = 0; i < copy.length; i++) {
+            for (int j = 0; j < copy[i].length; j++) {
+                if(copy[i][j]) {
+                    if (board.getBoard()[i][j]) {
+                        board.getBoard()[i][j] = false;
+                    }
+                }
             }
         }
-        if (boxStatus && foundBox) {
-            points += pointsIncrement;
+        points += (pointsIncrement * (numBox + numCol + numRow));
+    }
+
+    // Check all three cases, clear all possible cases at the same time
+    public void checkAllWins() {
+        // Set the number of things cleared back each time a new thing is cleared
+        copy = new boolean[board.getBoard().length][board.getBoard()[0].length];
+        numRow = 0;
+        numCol = 0;
+        numBox = 0;
+        rowStatus = false;
+        colStatus = false;
+        boxStatus = false;
+        checkBoxWin();
+        checkColWin();
+        checkRowWin();
+        if (rowStatus || colStatus || boxStatus) {
+            clearAll();
             frontend.repaint();
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++) {
-                    int rowClear = boxClearedX + i;
-                    int colClear = boxClearedY + j;
-                    board.getBoard()[rowClear][colClear] = false;
-                }
-            }
         }
-        return boxStatus;
     }
 
     public int getPoints() {
         return points;
+    }
+
+    public boolean[][] getCopyBoard() {
+        return copy;
     }
 
     // Same formula as isValid placement but instead with shapes (not clickedShape)
@@ -389,7 +399,6 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
         return true;
     }
 
-
     // Constantly checking if generated shapes are able to be placed on the board
     public boolean gameOver() {
         // Go through each generate shape, not just each clicked shape
@@ -405,6 +414,7 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
                 }
             }
         }
+        // Switch to losing page if gameOver is true
         state = 3;
         frontend.repaint();
         return true;
@@ -435,4 +445,11 @@ public class Game implements MouseListener, MouseMotionListener, ActionListener 
     public void actionPerformed(ActionEvent e) {
         frontend.repaint();
     }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+        int x = e.getX();
+        int y = e.getY();
+    }
+
 }
